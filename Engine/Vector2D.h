@@ -19,7 +19,7 @@ namespace Math{
     }
 
     Vector2D operator*( const Vector2D& vector, float scale ){
-        return Vector2D( vector.x * scale, vector.y * scale );
+        return scale * vector;
     }
 
 }
