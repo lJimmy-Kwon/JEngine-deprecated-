@@ -1,5 +1,4 @@
 #include "myglwindow.h"
-#include "ui_myglwindow.h"
 
 static float verts[] ={
     +0.0f, +0.1f,

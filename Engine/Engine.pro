@@ -20,6 +20,7 @@ SOURCES += \
     engine.cpp
 
 HEADERS += \
+    Vector2D.h \
     engine.h
 
 # Default rules for deployment.
