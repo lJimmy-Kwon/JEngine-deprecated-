@@ -1,5 +1,5 @@
 #include <QtTest>
-#include "Vector2D.h"
+#include "math/Vector2D.h"
 
 using Math::Vector2D;
 

@@ -20,8 +20,8 @@ SOURCES += \
     engine.cpp
 
 HEADERS += \
-    Vector2D.h \
-    Vector2D.inl \
+    math/Vector2D.h \
+    math/Vector2D.inl \
     engine.h
 
 # Default rules for deployment.
@@ -29,3 +29,5 @@ unix {
     target.path = $$[QT_INSTALL_PLUGINS]/generic
 }
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES +=
