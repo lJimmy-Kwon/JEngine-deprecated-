@@ -1,21 +1,35 @@
 #ifndef MYGLWINDOW_H
 #define MYGLWINDOW_H
 
+#include <QOpenGLFunctions>
+#include <QOpenGLWindow>
 #include <QWidget>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MyGLWindow; }
-QT_END_NAMESPACE
+#include <QOpenGLContext>
+#include <QDebug>
+#include <QTimer>
 
-class MyGLWindow : public QWidget
+class MyGLWindow : public QOpenGLWindow,
+        protected QOpenGLFunctions
 {
     Q_OBJECT
-
 public:
-    MyGLWindow(QWidget *parent = nullptr);
+    MyGLWindow();
     ~MyGLWindow();
 
+    void initializeGL() override;
+    void paintGL() override;
+
+    void updateForOSX();
+
+private slots:
+    void myUpdate();
+
 private:
-    Ui::MyGLWindow *ui;
+
+    GLuint vertexBufferId;
+    QTimer myTimer;
 };
+
+
 #endif // MYGLWINDOW_H
