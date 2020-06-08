@@ -21,6 +21,7 @@ SOURCES += \
 
 HEADERS += \
     Vector2D.h \
+    Vector2D.inl \
     engine.h
 
 # Default rules for deployment.
