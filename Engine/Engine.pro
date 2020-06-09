@@ -1,4 +1,4 @@
-QT -= gui
+QT += gui
 
 TEMPLATE = lib
 CONFIG += staticlib
@@ -18,10 +18,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Timing/Clock.cpp \
-    engine.cpp
+    engine.cpp \
+    input/input.cpp
 
 HEADERS += \
     Timing/Clock.h \
+    input/input.h \
     math/Vector2D.h \
     math/Vector2D.inl \
     engine.h

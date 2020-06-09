@@ -12,6 +12,7 @@
 #include <QApplication>
 
 #include "Timing/Clock.h"
+#include "input/input.h"
 
 class MyGLWindow : public QOpenGLWindow,
         protected QOpenGLFunctions
@@ -29,7 +30,12 @@ public:
     bool shutdown();
 
 protected:
-    void keyPressEvent(QKeyEvent* ) override;
+    void updateVelocity();
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 
 private slots:
     void myUpdate();

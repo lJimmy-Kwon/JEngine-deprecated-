@@ -15,6 +15,8 @@ namespace{
     };
 
     Vector2D shipPosition;
+    Vector2D shipVelocity;
+
     static const unsigned int NUM_VERTS = sizeof(verts) / sizeof(*verts);
 
     Clock frameClock;
@@ -70,17 +72,19 @@ void MyGLWindow::updateForOSX(){
 
 void MyGLWindow::myUpdate()
 {
+
     updateForOSX();
     frameClock.newFrame();
+    updateVelocity();
+    shipPosition = shipPosition + shipVelocity * frameClock.timeElapsedLastFrame();
 
 }
 
 void MyGLWindow::paintGL()
 {
-    qDebug() << __func__ << endl;
 
+    glViewport(0, 0, width(), height());
     glClear( GL_COLOR_BUFFER_BIT );
-
     Vector2D translatedVerts[NUM_VERTS];
 
     for(unsigned int i = 0 ; i < NUM_VERTS ; i++ ){
@@ -105,25 +109,60 @@ bool MyGLWindow::shutdown()
     return frameClock.shutdown();
 }
 
-void MyGLWindow::keyPressEvent(QKeyEvent* e)
-{
-    const float SPEED = 0.02f;
-    if( e->key() == Qt::Key_Up){
-        shipPosition.y += SPEED;
+void MyGLWindow::updateVelocity(){
+
+    Input::update();
+
+    const float ACCELERATION = 0.0000002f * frameClock.timeElapsedLastFrame();
+    if(Input::keyPressed(Qt::Key_Up)){
+        shipVelocity.y += ACCELERATION;
+    }
+    if( Input::keyPressed(Qt::Key_Down)){
+        shipVelocity.y -= ACCELERATION;
+    }
+    if( Input::keyPressed(Qt::Key_Right)){
+        shipVelocity.x += ACCELERATION;
+    }
+    if( Input::keyPressed(Qt::Key_Left)){
+        shipVelocity.x -= ACCELERATION;
     }
 
-    if( e->key() == Qt::Key_Down){
-        shipPosition.y -= SPEED;
-    }
-
-    if( e->key() == Qt::Key_Right){
-        shipPosition.x += SPEED;
-    }
-    if( e->key() == Qt::Key_Left){
-        shipPosition.x -= SPEED;
-    }
-
-    if( e->key() == Qt::Key_Escape){
+    if( Input::keyPressed(Qt::Key_Escape)){
         QApplication::quit();
     }
+
+}
+
+void MyGLWindow::keyPressEvent(QKeyEvent *event)
+{
+  if (event->isAutoRepeat())
+  {
+    event->ignore();
+  }
+  else
+  {
+    Input::registerKeyPress(event->key());
+  }
+}
+
+void MyGLWindow::keyReleaseEvent(QKeyEvent *event)
+{
+  if (event->isAutoRepeat())
+  {
+    event->ignore();
+  }
+  else
+  {
+    Input::registerKeyRelease(event->key());
+  }
+}
+
+void MyGLWindow::mousePressEvent(QMouseEvent *event)
+{
+  Input::registerMousePress(event->button());
+}
+
+void MyGLWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+  Input::registerMouseRelease(event->button());
 }
