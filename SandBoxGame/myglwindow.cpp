@@ -14,7 +14,7 @@ namespace{
         Vector2D(+0.1f, -0.1f),
     };
 
-    Vector2D shipPosition( 0.0f, 0.0f );
+    Vector2D shipPosition;
     static const unsigned int NUM_VERTS = sizeof(verts) / sizeof(*verts);
 
     Clock frameClock;
@@ -71,10 +71,8 @@ void MyGLWindow::updateForOSX(){
 void MyGLWindow::myUpdate()
 {
     updateForOSX();
-
     frameClock.newFrame();
-    Vector2D velocity( 0.1f, 0.1f );
-    shipPosition = shipPosition + velocity * ( frameClock.timeElapsedLastFrame() / 1000 );
+
 }
 
 void MyGLWindow::paintGL()
@@ -105,4 +103,27 @@ bool MyGLWindow::shutdown()
 {
     qDebug() << __func__ << endl;
     return frameClock.shutdown();
+}
+
+void MyGLWindow::keyPressEvent(QKeyEvent* e)
+{
+    const float SPEED = 0.02f;
+    if( e->key() == Qt::Key_Up){
+        shipPosition.y += SPEED;
+    }
+
+    if( e->key() == Qt::Key_Down){
+        shipPosition.y -= SPEED;
+    }
+
+    if( e->key() == Qt::Key_Right){
+        shipPosition.x += SPEED;
+    }
+    if( e->key() == Qt::Key_Left){
+        shipPosition.x -= SPEED;
+    }
+
+    if( e->key() == Qt::Key_Escape){
+        QApplication::quit();
+    }
 }

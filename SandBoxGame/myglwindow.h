@@ -8,6 +8,8 @@
 #include <QOpenGLContext>
 #include <QDebug>
 #include <QTimer>
+#include <QKeyEvent>
+#include <QApplication>
 
 #include "Timing/Clock.h"
 
@@ -25,6 +27,9 @@ public:
     void updateForOSX();
     bool initialize();
     bool shutdown();
+
+protected:
+    void keyPressEvent(QKeyEvent* ) override;
 
 private slots:
     void myUpdate();
