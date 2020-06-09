@@ -29,6 +29,8 @@ private:
 
     GLuint vertexBufferId;
     QTimer myTimer;
+
+    int frame = 0;
 };
 
 
