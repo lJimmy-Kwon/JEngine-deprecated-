@@ -1,31 +1,13 @@
-#include <QtTest>
-#include "math/Vector2D.h"
+#include "vector2d_test.h"
 
-using Math::Vector2D;
-
-class Vector2DTest : public QObject
-{
-    Q_OBJECT
-
-public:
-    Vector2DTest(){};
-    ~Vector2DTest(){};
-
-private slots:
-    void Constructor();
-    void VectorAddition();
-    void ScalarMultiplication();
-
-};
-
-void Vector2DTest::Constructor()
+void vector2D_test::Constructor()
 {
     Vector2D first( 1, 2 );
     QCOMPARE( first.x, 1 );
     QCOMPARE( first.y, 2 );
 }
 
-void Vector2DTest::VectorAddition()
+void vector2D_test::VectorAddition()
 {
     Vector2D first(1, 2);
     Vector2D second(3, 4);
@@ -43,7 +25,7 @@ void Vector2DTest::VectorAddition()
 
 }
 
-void Vector2DTest::ScalarMultiplication()
+void vector2D_test::ScalarMultiplication()
 {
     Vector2D vec( -7, 3 );
     Vector2D result1 = 8 * vec;
@@ -56,8 +38,3 @@ void Vector2DTest::ScalarMultiplication()
     QCOMPARE(result1.y, result2.y );
 
 }
-
-
-QTEST_APPLESS_MAIN(Vector2DTest)
-
-#include "Vector2DTest.moc"

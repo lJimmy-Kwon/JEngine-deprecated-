@@ -1,5 +1,6 @@
 #include "myglwindow.h"
 #include <QApplication>
+#include <QElapsedTimer>
 
 int main(int argc, char *argv[])
 {
@@ -10,10 +11,6 @@ int main(int argc, char *argv[])
     format.setProfile(QSurfaceFormat::CoreProfile);
     format.setMajorVersion(2);
     format.setMinorVersion(1);
-
-//    format.setVersion(2, 1);
-//    format.setSwapInterval(10);
-//    format.setSwapBehavior(QSurfaceFormat::SingleBuffer);
 
     MyGLWindow window;
     window.setFormat(format);
