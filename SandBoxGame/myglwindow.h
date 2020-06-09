@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QTimer>
 
+#include "Timing/Clock.h"
+
 class MyGLWindow : public QOpenGLWindow,
         protected QOpenGLFunctions
 {
@@ -21,6 +23,8 @@ public:
     void paintGL() override;
 
     void updateForOSX();
+    bool initialize();
+    bool shutdown();
 
 private slots:
     void myUpdate();

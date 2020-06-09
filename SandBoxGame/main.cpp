@@ -15,7 +15,15 @@ int main(int argc, char *argv[])
     MyGLWindow window;
     window.setFormat(format);
     window.resize(QSize( 800, 600 ));
+
+    if(!window.initialize())
+        return -1;
+
     window.show();
 
-    return a.exec();
+    int errorCode = a.exec();
+    if( !window.shutdown())
+        errorCode |= 1;
+
+    return errorCode;
 }

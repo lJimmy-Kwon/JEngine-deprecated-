@@ -2,6 +2,7 @@
 #define CLOCK_TEST_H
 
 #include <QtTest>
+#include <QDebug>
 #include <QTest>
 
 

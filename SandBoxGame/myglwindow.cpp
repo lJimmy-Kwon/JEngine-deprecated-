@@ -1,8 +1,10 @@
 #include "myglwindow.h"
 #include "math/Vector2D.h"
 
-using Math::Vector2D;
 #define endl Qt::endl
+
+using Math::Vector2D;
+using Timing::Clock;
 
 namespace{
 
@@ -13,8 +15,9 @@ namespace{
     };
 
     Vector2D shipPosition( 0.0f, 0.0f );
-
     static const unsigned int NUM_VERTS = sizeof(verts) / sizeof(*verts);
+
+    Clock frameClock;
 
 }
 
@@ -44,9 +47,7 @@ void MyGLWindow::initializeGL()
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), verts);
 
     connect( &myTimer, SIGNAL(timeout()), this, SLOT(myUpdate()));
-    myTimer.start(0);
-
-
+    myTimer.start(10);
 
     qDebug() << "end of initGL" << endl;
 }
@@ -57,34 +58,32 @@ void MyGLWindow::updateForOSX(){
     if(frame % 2 == 0){
         if( this->size() == QSize(800, 600))
         {
-            qDebug() << "this->size() == QSize(800, 600)" << endl;
             this->resize(QSize( 799, 599));
         }
         else
         {
-            qDebug() << "else" << endl;
             this->resize(800, 600);
         }
     }
 
 }
 
-int debugInt = 1;
-Vector2D translatedVerts[NUM_VERTS];
 void MyGLWindow::myUpdate()
 {
-    qDebug() << __func__ << endl;
     updateForOSX();
 
-    Vector2D velocity( 0.0001f, 0.0001f );
-    shipPosition = shipPosition + velocity;
+    frameClock.newFrame();
+    Vector2D velocity( 0.1f, 0.1f );
+    shipPosition = shipPosition + velocity * ( frameClock.timeElapsedLastFrame() / 1000 );
 }
 
 void MyGLWindow::paintGL()
 {
-    qDebug() << __func__<< debugInt++ << endl;
+    qDebug() << __func__ << endl;
 
     glClear( GL_COLOR_BUFFER_BIT );
+
+    Vector2D translatedVerts[NUM_VERTS];
 
     for(unsigned int i = 0 ; i < NUM_VERTS ; i++ ){
         translatedVerts[i] = verts[i] + shipPosition;
@@ -92,5 +91,18 @@ void MyGLWindow::paintGL()
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(translatedVerts), translatedVerts);
     glDrawArrays(GL_TRIANGLES, 0, 3 );
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(translatedVerts), translatedVerts);
+    glDrawArrays(GL_TRIANGLES, 0, 3 );
 
+}
+
+bool MyGLWindow::initialize()
+{
+   return  frameClock.initialize();
+}
+
+bool MyGLWindow::shutdown()
+{
+    qDebug() << __func__ << endl;
+    return frameClock.shutdown();
 }

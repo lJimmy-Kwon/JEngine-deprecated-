@@ -36,6 +36,7 @@ void Clock_test::FrameTimeMeasuring()
     const float THRESHOLD = 10;
 
     for( int i = 0 ; i < NUM_TESTS; i++ ){
+        qDebug().nospace() << ".";
         int thisTestMiliseconds = rand() % 10000;
         float thisTestSeconds = thisTestMiliseconds;
 
