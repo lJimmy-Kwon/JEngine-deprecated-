@@ -2,6 +2,7 @@
 #define CLOCK_TEST_H
 
 #include <QtTest>
+#include <QTest>
 
 
 class Clock_test : public QObject
@@ -13,6 +14,7 @@ public:
 
 private slots:
     void Initialize();
+    void FrameTimeMeasuring();
 
 };
 
