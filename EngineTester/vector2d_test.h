@@ -16,6 +16,10 @@ public:
 
 private slots:
     void Constructor();
+    void CopyConstructor();
+    void AssignmentOperators();
+    void AssignmentPlusEquals();
+    void AssignmentMinusEquals();
     void VectorAddition();
     void ScalarMultiplication();
 

@@ -76,7 +76,8 @@ void MyGLWindow::myUpdate()
     updateForOSX();
     frameClock.newFrame();
     updateVelocity();
-    shipPosition = shipPosition + shipVelocity * frameClock.timeElapsedLastFrame();
+    shipPosition += shipVelocity * frameClock.timeElapsedLastFrame();
+
 
 }
 
@@ -114,15 +115,19 @@ void MyGLWindow::updateVelocity(){
     Input::update();
 
     const float ACCELERATION = 0.0000002f * frameClock.timeElapsedLastFrame();
+
     if(Input::keyPressed(Qt::Key_Up)){
         shipVelocity.y += ACCELERATION;
     }
+
     if( Input::keyPressed(Qt::Key_Down)){
         shipVelocity.y -= ACCELERATION;
     }
+
     if( Input::keyPressed(Qt::Key_Right)){
         shipVelocity.x += ACCELERATION;
     }
+
     if( Input::keyPressed(Qt::Key_Left)){
         shipVelocity.x -= ACCELERATION;
     }
@@ -135,7 +140,8 @@ void MyGLWindow::updateVelocity(){
 
 void MyGLWindow::keyPressEvent(QKeyEvent *event)
 {
-  if (event->isAutoRepeat())
+
+  if(event->isAutoRepeat())
   {
     event->ignore();
   }
@@ -143,11 +149,12 @@ void MyGLWindow::keyPressEvent(QKeyEvent *event)
   {
     Input::registerKeyPress(event->key());
   }
+
 }
 
 void MyGLWindow::keyReleaseEvent(QKeyEvent *event)
 {
-  if (event->isAutoRepeat())
+  if(event->isAutoRepeat())
   {
     event->ignore();
   }

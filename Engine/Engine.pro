@@ -24,6 +24,8 @@ SOURCES += \
 HEADERS += \
     Timing/Clock.h \
     input/input.h \
+    math/Matrix2D.h \
+    math/Matrix2D.inl \
     math/Vector2D.h \
     math/Vector2D.inl \
     engine.h

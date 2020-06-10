@@ -9,3 +9,32 @@ Vector2D operator*( float scale, const Vector2D& vector){
 Vector2D operator*( const Vector2D& vector, float scale ){
     return scale * vector;
 }
+
+Vector2D::Vector2D(const Vector2D& source){
+
+    x = source.x;
+    y = source.y;
+}
+
+Vector2D& Vector2D::operator=(const Vector2D& right){
+    x = right.x;
+    y = right.y;
+
+    return *this;
+}
+
+Vector2D& Vector2D::operator+=(const Vector2D& right){
+
+    x += right.x;
+    y += right.y;
+
+    return *this;
+}
+
+Vector2D& Vector2D::operator-=(const Vector2D& right){
+
+    x -= right.x;
+    y -= right.y;
+
+    return *this;
+}

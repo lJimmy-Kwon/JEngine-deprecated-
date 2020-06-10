@@ -38,3 +38,57 @@ void vector2D_test::ScalarMultiplication()
     QCOMPARE(result1.y, result2.y );
 
 }
+
+void vector2D_test::CopyConstructor()
+{
+    Vector2D source( 5, -1234.5678 );
+    Vector2D theCopy(source);
+
+    QCOMPARE( theCopy.x, source.x );
+    QCOMPARE( theCopy.y, source.y );
+
+}
+
+void vector2D_test::AssignmentOperators()
+{
+    Vector2D source( 5, -1234.5678f);
+    Vector2D another( 1, 1        );
+
+
+    QCOMPARE( another.x, 1 );
+    QCOMPARE( another.y, 1 );
+
+    another = source;
+
+    QCOMPARE( another.x, source.x );
+    QCOMPARE( another.y, source.y );
+
+    QCOMPARE( another.x, 5 );
+    QCOMPARE( another.y, -1234.5678f );
+
+}
+
+
+void vector2D_test::AssignmentPlusEquals(){
+
+    Vector2D source( 5, -1234.5678f);
+    Vector2D another( 1, 1        );
+
+    another += source;
+
+    QCOMPARE(another.x, 6 );
+    QCOMPARE(another.y, -1233.5678f );
+
+}
+
+void vector2D_test::AssignmentMinusEquals(){
+
+    Vector2D source( 5, -1234.5678f);
+    Vector2D another( 1, 1        );
+
+    another -= source;
+
+    QCOMPARE(another.x, -4 );
+    QCOMPARE(another.y, 1235.5678f );
+
+}

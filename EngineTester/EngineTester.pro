@@ -9,10 +9,12 @@ TEMPLATE = app
 SOURCES +=  \
     clock_test.cpp \
     main_test.cpp \
+    matrix2d_test.cpp \
     vector2d_test.cpp
 
 HEADERS += \
     clock_test.h \
+    matrix2d_test.h \
     vector2d_test.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Engine/release/ -lEngine
