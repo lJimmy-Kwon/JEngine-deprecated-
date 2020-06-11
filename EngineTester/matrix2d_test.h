@@ -2,11 +2,15 @@
 #define MATRIX2D_TEST_H
 
 #include <QtTest>
+#include <QtMath>
 #include "math/Matrix2D.h"
 #include "math/Vector2D.h"
+#include "math/Common.h"
 
 using Math::Matrix2D;
 using Math::Vector2D;
+
+
 
 class matrix2D_test : public QObject
 {
@@ -19,6 +23,7 @@ public:
 private slots:
     void Constructor();
     void MatrixVectorMultiply();
+    void Rotation();
 //    void CopyConstructor();
 //    void AssignmentOperators();
 //    void AssignmentPlusEquals();

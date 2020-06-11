@@ -1,4 +1,5 @@
-QT += gui
+QT += testlib
+QT -= gui
 
 TEMPLATE = lib
 CONFIG += staticlib
@@ -24,6 +25,7 @@ SOURCES += \
 HEADERS += \
     Timing/Clock.h \
     input/input.h \
+    math/Common.h \
     math/Matrix2D.h \
     math/Matrix2D.inl \
     math/Vector2D.h \

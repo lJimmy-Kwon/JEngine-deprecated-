@@ -8,12 +8,14 @@ TEMPLATE = app
 
 SOURCES +=  \
     clock_test.cpp \
+    common_test.cpp \
     main_test.cpp \
     matrix2d_test.cpp \
     vector2d_test.cpp
 
 HEADERS += \
     clock_test.h \
+    common_test.h \
     matrix2d_test.h \
     vector2d_test.h
 
