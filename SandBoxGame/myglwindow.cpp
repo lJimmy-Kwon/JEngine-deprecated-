@@ -1,21 +1,24 @@
 #include "myglwindow.h"
 #include "math/Vector2D.h"
+#include "math/Matrix2D.h"
 
 #define endl Qt::endl
 
 using Math::Vector2D;
+using Math::Matrix2D;
 using Timing::Clock;
 
 namespace{
 
     Vector2D verts[] ={
-        Vector2D(+0.0f, +0.1f),
+        Vector2D(+0.0f, +sqrt(0.02f)),
         Vector2D(-0.1f, -0.1f),
         Vector2D(+0.1f, -0.1f),
     };
 
     Vector2D shipPosition;
     Vector2D shipVelocity;
+    float shipOrientation = 0.0f;
 
     static const unsigned int NUM_VERTS = sizeof(verts) / sizeof(*verts);
 
@@ -72,29 +75,35 @@ void MyGLWindow::updateForOSX(){
 
 void MyGLWindow::myUpdate()
 {
-
     updateForOSX();
     frameClock.newFrame();
+    rotateShip();
     updateVelocity();
     shipPosition += shipVelocity * frameClock.timeElapsedLastFrame();
-
-
 }
 
 void MyGLWindow::paintGL()
 {
+    int minSize = qMin( width(), height() );
+    Vector2D viewportLocation;
 
-    glViewport(0, 0, width(), height());
+    viewportLocation.x = width()  / 2.0f - minSize / 2.0f;
+    viewportLocation.y = height() / 2.0f - minSize / 2.0f;
+
+    glViewport( viewportLocation.x, viewportLocation.y, minSize, minSize);
+
     glClear( GL_COLOR_BUFFER_BIT );
-    Vector2D translatedVerts[NUM_VERTS];
+    Vector2D transFormedVerts[NUM_VERTS];
+    Matrix2D op = Matrix2D::rotate(shipOrientation);
+
 
     for(unsigned int i = 0 ; i < NUM_VERTS ; i++ ){
-        translatedVerts[i] = verts[i] + shipPosition;
+        transFormedVerts[i] = shipPosition + (op * verts[i]);
     }
 
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(translatedVerts), translatedVerts);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(transFormedVerts), transFormedVerts);
     glDrawArrays(GL_TRIANGLES, 0, 3 );
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(translatedVerts), translatedVerts);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(transFormedVerts), transFormedVerts);
     glDrawArrays(GL_TRIANGLES, 0, 3 );
 
 }
@@ -113,23 +122,26 @@ bool MyGLWindow::shutdown()
 void MyGLWindow::updateVelocity(){
 
     Input::update();
-
     const float ACCELERATION = 0.0000002f * frameClock.timeElapsedLastFrame();
 
-    if(Input::keyPressed(Qt::Key_Up)){
-        shipVelocity.y += ACCELERATION;
-    }
+    Vector2D directionToAccelerate( -sin(shipOrientation), cos(shipOrientation));
 
-    if( Input::keyPressed(Qt::Key_Down)){
-        shipVelocity.y -= ACCELERATION;
+    if(Input::keyPressed(Qt::Key_Up)){
+        shipVelocity += directionToAccelerate * ACCELERATION;
     }
+}
+
+void MyGLWindow::rotateShip(){
+
+    Input::update();
+    const float ANGULAR_MOVEMENT = 0.02f;
 
     if( Input::keyPressed(Qt::Key_Right)){
-        shipVelocity.x += ACCELERATION;
+        shipOrientation -= ANGULAR_MOVEMENT;
     }
 
     if( Input::keyPressed(Qt::Key_Left)){
-        shipVelocity.x -= ACCELERATION;
+        shipOrientation += ANGULAR_MOVEMENT;
     }
 
     if( Input::keyPressed(Qt::Key_Escape)){

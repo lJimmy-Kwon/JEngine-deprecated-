@@ -1,5 +1,4 @@
-QT += testlib
-QT -= gui
+QT += testlib gui
 
 TEMPLATE = lib
 CONFIG += staticlib

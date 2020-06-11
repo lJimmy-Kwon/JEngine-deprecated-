@@ -31,6 +31,7 @@ public:
 
 protected:
     void updateVelocity();
+    void rotateShip();
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;

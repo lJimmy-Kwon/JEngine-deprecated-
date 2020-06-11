@@ -12,8 +12,8 @@ int main(int argc, char** argv ){
 //        status |= QTest::qExec(&ct, argc, argv );
     }
     {
-//        vector2D_test vt;
-//        status |= QTest::qExec(&vt, argc, argv );
+        vector2D_test vt;
+        status |= QTest::qExec(&vt, argc, argv );
     }
     {
         common_test cot;
