@@ -42,9 +42,12 @@ namespace Math
 
     Matrix2D Matrix2D::rotate(float angleInRadians){
 
+        float cosResult = qCos(angleInRadians);
+        float sinResult = qSin(angleInRadians);
+
         return Matrix2D(
-                    qCos(angleInRadians), -qSin(angleInRadians),
-                    qSin(angleInRadians), qCos(angleInRadians)
+                    cosResult, -sinResult,
+                    sinResult, cosResult
                     );
     }
 
