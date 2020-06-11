@@ -27,9 +27,13 @@ HEADERS += \
     math/Common.h \
     math/Matrix2D.h \
     math/Matrix2D.inl \
+    math/Matrix3D.h \
+    math/Matrix3D.inl \
     math/Vector2D.h \
     math/Vector2D.inl \
-    engine.h
+    engine.h \
+    math/Vector3D.h \
+    math/Vector3D.inl
 
 # Default rules for deployment.
 unix {

@@ -1,23 +1,28 @@
 #include "myglwindow.h"
 #include "math/Vector2D.h"
 #include "math/Matrix2D.h"
+#include "math/Vector3D.h"
+#include "math/Matrix3D.h"
 
 #define endl Qt::endl
 
 using Math::Vector2D;
 using Math::Matrix2D;
+using Math::Vector3D;
+using Math::Matrix3D;
+
 using Timing::Clock;
 
 namespace{
 
-    Vector2D verts[] ={
-        Vector2D(+0.0f, +sqrt(0.02f)),
-        Vector2D(-0.1f, -0.1f),
-        Vector2D(+0.1f, -0.1f),
+    Vector3D verts[] ={
+        Vector3D(+0.0f, +sqrt(0.02f), 1),
+        Vector3D(-0.1f, -0.1f, 1),
+        Vector3D(+0.1f, -0.1f, 1),
     };
 
-    Vector2D shipPosition;
-    Vector2D shipVelocity;
+    Vector3D shipPosition;
+    Vector3D shipVelocity;
     float shipOrientation = 0.0f;
 
     static const unsigned int NUM_VERTS = sizeof(verts) / sizeof(*verts);
@@ -93,12 +98,11 @@ void MyGLWindow::paintGL()
     glViewport( viewportLocation.x, viewportLocation.y, minSize, minSize);
 
     glClear( GL_COLOR_BUFFER_BIT );
-    Vector2D transFormedVerts[NUM_VERTS];
-    Matrix2D op = Matrix2D::rotate(shipOrientation);
-
+    Vector3D transFormedVerts[NUM_VERTS];
+    Matrix3D op = Matrix3D::rotateZ(shipOrientation);
 
     for(unsigned int i = 0 ; i < NUM_VERTS ; i++ ){
-        transFormedVerts[i] = shipPosition + (op * verts[i]);
+        transFormedVerts[i] = op * verts[i];
     }
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(transFormedVerts), transFormedVerts);
@@ -124,7 +128,7 @@ void MyGLWindow::updateVelocity(){
     Input::update();
     const float ACCELERATION = 0.0000002f * frameClock.timeElapsedLastFrame();
 
-    Vector2D directionToAccelerate( -sin(shipOrientation), cos(shipOrientation));
+    Vector3D directionToAccelerate( -sin(shipOrientation), cos(shipOrientation));
 
     if(Input::keyPressed(Qt::Key_Up)){
         shipVelocity += directionToAccelerate * ACCELERATION;

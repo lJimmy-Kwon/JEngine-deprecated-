@@ -22,5 +22,4 @@ namespace Math{
 
 }
 
-
 #endif // VECTOR2D_H
