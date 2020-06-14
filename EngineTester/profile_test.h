@@ -14,7 +14,12 @@ public:
 
 private slots:
     void profiling();
-    void excludeIncompleteFrames();
+    void ExcludeIncompleteFrames();
+    void SamllAmountOfFrames();
+    void LargeAmountOfFramesNonCircular();
+    void ArrayBoundaries();
+    void CirculatingOnePlusSome();
+    void GoAroundSeveralTimes();
 
 };
 
