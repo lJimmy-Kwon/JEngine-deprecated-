@@ -1,14 +1,15 @@
 #include "profiler.h"
+#ifdef PROFILEING_ON
+
+Profiler Profiler::theInstance;
+Profiler& Profiler::getInstance(){
+    return theInstance;
+};
+
 #include <cassert>
 #include <string>
 
 static std::ofstream outStream;
-
-Profiler::Profiler( QObject *parent ) : QObject( parent )
-{
-
-}
-
 void Profiler::initialize( const char* fileName )
 {
 
@@ -122,3 +123,5 @@ char Profiler::getDelimiter( unsigned int index) const
 bool Profiler::currentFrameComplete() const {
     return categoryIndex == numUsedCategories;
 }
+
+#endif

@@ -6,17 +6,26 @@
 
 class Profiler : public QObject
 {
+public:
+    static const unsigned int MAX_FRAME_NUMBER = 1000;
+    static const unsigned int MAX_PROFILE_CATEGORIES = 20;
+    static Profiler& getInstance();
+
+private:
+    Profiler(){};
+    Profiler(const Profiler&);
+    Profiler& operator=(const Profiler&);
+    static Profiler theInstance;
+public:
+
+#if PROFILEING_ON
     Q_OBJECT
 
     const char* fileName;
-    static const unsigned int MAX_PROFILE_CATEGORIES = 20;
+
     unsigned int frameIndex;
     unsigned int categoryIndex;
     unsigned int numUsedCategories;
-
-public:
-    static const unsigned int MAX_FRAME_NUMBER = 1000;
-
     struct ProfileCategory{
 
         const char* name;
@@ -25,23 +34,24 @@ public:
     }categories[ MAX_PROFILE_CATEGORIES ];
 
     char getDelimiter( unsigned int index) const;
-
-
-    explicit Profiler( QObject *parent = nullptr );
-    void initialize( const char* fileName );
-    void addEntry( const char* category, float time );
-    void newFrame();
-    void shutdown();
     bool wrapped() const;
-
     void writeFrame(unsigned int frameNumber) const;
     void writeData() const;
-
     bool currentFrameComplete() const;
-
-signals:
-
+#endif
+#if PROFILEING_ON
+    void initialize( const char* fileName );
+    void newFrame();
+    void shutdown();
+    void addEntry( const char* category, float time );
+#else
+    void initialize( const char* fileName ){};
+    void newFrame(){};
+    void shutdown(){};
+    void addEntry( const char* category, float time ){};
+#endif
 };
 
+#define profiler Profiler::getInstance()
 
 #endif // PROFILER_H
