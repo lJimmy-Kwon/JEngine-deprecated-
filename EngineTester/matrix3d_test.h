@@ -22,7 +22,9 @@ public:
 private slots:
     void Constructor();
     void MatrixVectorMultiply();
+    void MatrixMatrixMultiply();
     void Rotation();
+    void Translate();
 };
 
 #endif // MATRIX3D_H

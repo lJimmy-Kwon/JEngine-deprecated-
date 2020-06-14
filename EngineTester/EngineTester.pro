@@ -12,6 +12,7 @@ SOURCES +=  \
     main_test.cpp \
     matrix2d_test.cpp \
     matrix3d_test.cpp \
+    profile_test.cpp \
     vector2d_test.cpp \
     vector3d_test.cpp
 
@@ -20,6 +21,7 @@ HEADERS += \
     common_test.h \
     matrix2d_test.h \
     matrix3d_test.h \
+    profile_test.h \
     vector2d_test.h \
     vector3d_test.h
 

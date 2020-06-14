@@ -3,6 +3,7 @@
 #include "vector3d_test.h"
 #include "matrix2d_test.h"
 #include "matrix3d_test.h"
+#include "profile_test.h"
 #include "common_test.h"
 
 int main(int argc, char** argv ){
@@ -30,8 +31,12 @@ int main(int argc, char** argv ){
 //        status |= QTest::qExec(&v3t, argc, argv );
     }
     {
-         matrix3D_test m3t;
-         status |= QTest::qExec(&m3t, argc, argv );
+//         matrix3D_test m3t;
+//         status |= QTest::qExec(&m3t, argc, argv );
+    }
+    {
+        profile_test pr;
+        status |= QTest::qExec(&pr, argc, argv );
     }
 
     return status;

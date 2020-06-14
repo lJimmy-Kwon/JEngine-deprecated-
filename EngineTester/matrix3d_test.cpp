@@ -61,6 +61,32 @@ void matrix3D_test::MatrixVectorMultiply()
     QCOMPARE( victimPrime.z, 3 * 7 + 9 * 8 + 9 * 1 );
 }
 
+void matrix3D_test::MatrixMatrixMultiply()
+{
+    Matrix3D m1( 1, 2, 3,
+                 4, 5, 6,
+                 7, 8, 9);
+
+    Matrix3D m2( 1, 2, 3,
+                 4, 5, 6,
+                 7, 8, 9);
+
+    Matrix3D m3 = m1 * m2;
+
+    QCOMPARE(m3.r0c0, 1 + 8 + 21 );
+    QCOMPARE(m3.r0c1, 2 + 10 + 24);
+    QCOMPARE(m3.r0c2, 3 + 12 + 27);
+
+    QCOMPARE(m3.r1c0, 4 + 20 + 42);
+    QCOMPARE(m3.r1c1, 8 + 25 + 48);
+    QCOMPARE(m3.r1c2, 12 + 30 + 54);
+
+    QCOMPARE(m3.r2c0, 7 + 32 + 63);
+    QCOMPARE(m3.r2c1,  14 + 40 + 72 );
+    QCOMPARE(m3.r2c2, 21 + 48 + 81);
+
+}
+
 void matrix3D_test::Rotation()
 {
     Matrix3D op = Matrix3D::rotateZ(0);
@@ -159,5 +185,17 @@ void matrix3D_test::Rotation()
     QFCOMPARE(op.r2c1, 0.0f);
     QFCOMPARE(op.r2c2, 1.0f);
 
+
+}
+void matrix3D_test::Translate(){
+
+    Matrix3D translator = Matrix3D::translate( 4, 8 );
+    Vector3D Victim = Vector3D(1, 1, 1);
+
+    Victim = translator * Victim;
+
+    QCOMPARE(Victim.x, 5 );
+    QCOMPARE(Victim.y, 9 );
+    QCOMPARE(Victim.z, 1 );
 
 }

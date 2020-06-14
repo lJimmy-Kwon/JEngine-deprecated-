@@ -17,11 +17,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    DebugTools/Profiling/profiler.cpp \
     Timing/Clock.cpp \
     engine.cpp \
     input/input.cpp
 
 HEADERS += \
+    DebugTools/Profiling/profiler.h \
     Timing/Clock.h \
     input/input.h \
     math/Common.h \
