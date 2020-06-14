@@ -7,6 +7,7 @@ using std::string;
 namespace
 {
 
+    Profiler profiler;
     char* categories[] = {
         "Category1",
         "Category2",
@@ -37,11 +38,6 @@ string getNextToken(ifstream& theFile){
 }
 
 void writeSamples(){
-    Profiler profiler;
-
-    profiler.initialize(PROFILE_FILE_NAME);
-
-
 
     float sampleNumber = 0;
     for( float frame = 0 ; frame < NUM_FRAMES ; frame++ ){
@@ -52,15 +48,9 @@ void writeSamples(){
             profiler.addEntry(categories[cat], sampleNumber++ );
         }
     }
-
-    profiler.shutdown();
-
-
 }
 
-void profile_test::profiling()
-{
-
+void checkSamples(){
 
     ifstream input( PROFILE_FILE_NAME );
     input.unsetf(std::ios_base::skipws);
@@ -75,9 +65,22 @@ void profile_test::profiling()
         QCOMPARE(atoi(buf.c_str()), i);
 
     }
+
+}
+
+void profile_test::profiling()
+{
+
+    profiler.initialize(PROFILE_FILE_NAME);
+    writeSamples();
+    profiler.shutdown();
+    checkSamples();
 }
 
 void profile_test::excludeIncompleteFrames()
 {
-
+//    profiler.initialize(PROFILE_FILE_NAME);
+//    writeSamples();
+//    profiler.addEntry(categories[0], 15);
+//    profiler.shutdown();
 }
