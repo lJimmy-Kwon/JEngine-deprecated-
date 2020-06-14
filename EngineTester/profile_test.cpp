@@ -22,7 +22,6 @@ string getNextToken(ifstream& theFile){
     char c;
     string ret;
 
-
     while(theFile.good()){
         theFile >> c;
         if( c == ',' || c == '\n' )
