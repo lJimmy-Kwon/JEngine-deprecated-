@@ -18,17 +18,17 @@ void Clock_test::FrameTimeMeasuring()
     QCOMPARE(clock.initialize(), true);
 
     QTest::qSleep(1000);
-    clock.newFrame();
+    clock.lap();
 
-    float timedTime = clock.timeElapsedLastFrame();
+    float timedTime = clock.lastlapTime();
     QCOMPARE( 900 < timedTime, true );
     QCOMPARE(timedTime < 1100, true );
 
-    clock.newFrame();
+    clock.lap();
     QTest::qSleep(500);
-    clock.newFrame();
+    clock.lap();
 
-    timedTime = clock.timeElapsedLastFrame();
+    timedTime = clock.lastlapTime();
     QCOMPARE( 400 < timedTime , true );
     QCOMPARE(timedTime < 600 , true );
 
@@ -39,18 +39,18 @@ void Clock_test::FrameTimeMeasuring()
         int thisTestMiliseconds = rand() % 10000;
         float thisTestSeconds = thisTestMiliseconds;
 
-        clock.newFrame();
+        clock.lap();
         QTest::qSleep(thisTestMiliseconds);
-        clock.newFrame();
+        clock.lap();
 
-        float elapsedSeconds = clock.timeElapsedLastFrame();
+        float elapsedSeconds = clock.lastlapTime();
         QCOMPARE( (thisTestSeconds - THRESHOLD) <  elapsedSeconds, true );
         QCOMPARE(  elapsedSeconds < (thisTestSeconds + THRESHOLD), true );
 
     }
 
-    clock.newFrame();
-    clock.timeElapsedLastFrame();
+    clock.lap();
+    clock.lastlapTime();
 
     QCOMPARE(clock.shutdown(), true);
 }

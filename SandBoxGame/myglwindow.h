@@ -13,6 +13,10 @@
 
 #include "Timing/Clock.h"
 #include "input/input.h"
+#include "DebugTools/Profiling/profile.h"
+#include "DebugTools/Profiling/profiler.h"
+
+#include <QTest>
 
 class MyGLWindow : public QOpenGLWindow,
         protected QOpenGLFunctions
@@ -36,6 +40,9 @@ protected:
     void keyReleaseEvent(QKeyEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void checkBounderies();
+
+    bool is_updated = false;
 
 
 private slots:
@@ -43,8 +50,6 @@ private slots:
 
 private:
 
-    GLuint vertexBufferId;
-    QTimer myTimer;
 
 
 

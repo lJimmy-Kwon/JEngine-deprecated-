@@ -27,6 +27,7 @@ namespace Math{
 
         inline static Matrix3D translate(float x, float y);
         inline static Matrix3D translate(const Vector3D& vector);
+        inline static Matrix3D scale(float x, float y);
 
     };
 
@@ -88,6 +89,13 @@ namespace Math{
 
     Matrix3D Matrix3D::translate(const Vector3D& vector){
         return translate( vector.x, vector.y );
+    }
+
+    Matrix3D Matrix3D::scale(float x, float y)
+    {
+        return Matrix3D(x, 0, 0,
+                        0, y, 0,
+                        0, 0, 1 );
     }
 
 };

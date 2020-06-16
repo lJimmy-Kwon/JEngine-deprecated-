@@ -15,11 +15,27 @@ using Timing::Clock;
 
 namespace{
 
-    Vector3D verts[] = {
+    Vector3D shipVerts[] = {
 
-        Vector3D(+0.0f, +sqrt(0.02f), 1),
-        Vector3D(-0.1f, -0.1f, 1),
-        Vector3D(+0.1f, -0.1f, 1),
+        Vector3D(+0.0f, +sqrt(0.02f), 1.0f),
+        Vector3D(-0.1f, -0.1f, 1.0f),
+        Vector3D(+0.1f, -0.1f, 1.0f),
+
+        Vector3D( -0.0f, +1.0f, 1.0f ),
+        Vector3D( -1.0f, +0.0f, 1.0f ),
+        Vector3D( -0.0f, -1.0f, 1.0f ),
+        Vector3D( +1.0f, +0.0f, 1.0f ),
+
+    };
+
+    GLushort indices[] = {0, 1, 1, 2, 2, 0, 3, 4, 4, 5, 5, 6, 6, 3};
+
+    Vector3D bounderyVerts[] ={
+
+        Vector3D( -0.0f, +1.0f, 0.0f ),
+        Vector3D( -1.0f, +0.0f, 0.0f ),
+        Vector3D( -0.0f, -1.0f, 0.0f ),
+        Vector3D( +1.0f, +0.0f, 0.0f ),
 
     };
 
@@ -27,7 +43,15 @@ namespace{
     Vector3D shipVelocity;
 
     float shipOrientation = 0.0f;
-    static const unsigned int NUM_VERTS = sizeof( verts ) / sizeof( *verts );
+    static const unsigned int NUM_shipVerts = sizeof( shipVerts ) / sizeof( *shipVerts );
+    static const unsigned int NUM_BOUNDARY_VERTS = sizeof( bounderyVerts ) / sizeof( *bounderyVerts );
+
+    GLuint shipVertexBufferId;
+    GLuint boundaryVertsBufferID;
+    GLuint indicesBufferId;
+
+    QTimer myTimer;
+
 
     Clock frameClock;
 
@@ -41,23 +65,27 @@ MyGLWindow::MyGLWindow()
 MyGLWindow::~MyGLWindow()
 {
     qDebug() << __func__ << endl;
+
 }
 
 void MyGLWindow::initializeGL()
 {
 
     initializeOpenGLFunctions();
+    glEnableVertexAttribArray( 0 );
 
     glViewport(0, 0, 800, 600 );
 
-    glGenBuffers( 1, &vertexBufferId);
-    glBindBuffer( GL_ARRAY_BUFFER, vertexBufferId );
-
-    glBufferData( GL_ARRAY_BUFFER, sizeof( verts ), NULL, GL_DYNAMIC_DRAW );
-    glEnableVertexAttribArray( 0 );
+    glGenBuffers( 1, &shipVertexBufferId);
+    glBindBuffer( GL_ARRAY_BUFFER, shipVertexBufferId );
+    glBufferData( GL_ARRAY_BUFFER, sizeof(shipVerts), NULL, GL_DYNAMIC_DRAW );
     glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+    glPointSize(10.0f);
 
-    glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( verts ), verts );
+    glGenBuffers(1, &indicesBufferId );
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBufferId );
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),
+                 indices, GL_STATIC_DRAW );
 
     connect( &myTimer, SIGNAL( timeout() ), this, SLOT( myUpdate() ));
     myTimer.start( 10 );
@@ -86,56 +114,90 @@ void MyGLWindow::updateForOSX(){
 void MyGLWindow::myUpdate()
 {
     updateForOSX();
-    frameClock.newFrame();
+    frameClock.lap();
     rotateShip();
     updateVelocity();
 
-    shipPosition += shipVelocity * frameClock.timeElapsedLastFrame();
+    checkBounderies();
+
+    shipPosition += shipVelocity * frameClock.lastlapTime();
+
+    is_updated = true;
 }
 
 void MyGLWindow::paintGL()
 {
+    if(is_updated){
+        profiler.newFrame();
 
-    int minSize = qMin( width(), height() );
-    Vector2D viewportLocation;
+        int minSize = qMin( width(), height() );
+        Vector2D viewportLocation;
 
-    viewportLocation.x = width()  / 2.0f - minSize / 2.0f;
-    viewportLocation.y = height() / 2.0f - minSize / 2.0f;
+        viewportLocation.x = width()  / 2.0f - minSize / 2.0f;
+        viewportLocation.y = height() / 2.0f - minSize / 2.0f;
 
-    glViewport( viewportLocation.x, viewportLocation.y, minSize, minSize );
+        glViewport( 0, 0, width(), height() );
 
-    glClear( GL_COLOR_BUFFER_BIT );
-    Vector3D transFormedVerts[ NUM_VERTS ];
-    Matrix3D translator = Matrix3D::translate( shipPosition );
-    Matrix3D rotator = Matrix3D::rotateZ( shipOrientation );
-    Matrix3D op =  translator * rotator;
+        glClear( GL_COLOR_BUFFER_BIT );
+        Vector3D transFormedshipVerts[ NUM_shipVerts ];
+        Matrix3D translator = Matrix3D::translate( shipPosition );
+        Matrix3D rotator = Matrix3D::rotateZ( shipOrientation );
 
-    for(unsigned int i = 0 ; i < NUM_VERTS ; i++ ){
-        transFormedVerts[i] = op * verts[i];
+        float aspectRatio = static_cast<float>(width() / height());
+        Matrix3D scale = Matrix3D::scale( 1/ aspectRatio, 1 );
+
+
+        Matrix3D op;
+        {
+            PROFILE("Matrix Multiplication");
+            op =  translator *  scale * rotator;
+        }
+
+        {
+            PROFILE("Vector Transformation");
+            for( unsigned int i = 0 ; i < 3 ; i++ ){
+                transFormedshipVerts[i] = op * shipVerts[i];
+            }
+            for( unsigned int i = 3 ; i < NUM_shipVerts ; i++ ){
+                transFormedshipVerts[i] = shipVerts[i];
+            }
+        }
+
+        glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(transFormedshipVerts), transFormedshipVerts);
+        glDrawElements(GL_LINES, 15, GL_UNSIGNED_SHORT, 0 );
+        glDrawElements(GL_LINES, 15, GL_UNSIGNED_SHORT, 0 );
+        is_updated = false;
     }
-
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(transFormedVerts), transFormedVerts);
-    glDrawArrays(GL_TRIANGLES, 0, 3 );
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(transFormedVerts), transFormedVerts);
-    glDrawArrays(GL_TRIANGLES, 0, 3 );
-
 }
 
 bool MyGLWindow::initialize()
 {
-   return  frameClock.initialize();
+    qDebug() << __func__ << endl;
+    bool ret = true;
+    profiler.initialize("profiles.csv");
+
+    ret &= frameClock.initialize();
+
+    return ret;
 }
 
 bool MyGLWindow::shutdown()
 {
     qDebug() << __func__ << endl;
-    return frameClock.shutdown();
+
+    bool ret = true;
+    profiler.shutdown();
+
+    ret &= frameClock.shutdown();
+
+    return ret;
+
 }
 
 void MyGLWindow::updateVelocity(){
 
     Input::update();
-    const float ACCELERATION = 0.0000002f * frameClock.timeElapsedLastFrame();
+    const float ACCELERATION = 0.0000002f * frameClock.lastlapTime();
 
     Vector3D directionToAccelerate( -sin(shipOrientation), cos(shipOrientation));
 
@@ -144,6 +206,27 @@ void MyGLWindow::updateVelocity(){
         shipVelocity += directionToAccelerate * ACCELERATION;
 
     }
+}
+
+void MyGLWindow::checkBounderies(){
+
+    bool anyCollisions = false;
+
+    for( uint i = 0 ; i < NUM_BOUNDARY_VERTS ; i++){
+
+        const Vector3D& first  = bounderyVerts[i];
+        const Vector3D& second = bounderyVerts[( i + 1 ) % NUM_BOUNDARY_VERTS ];
+
+        Vector3D wall = second - first;
+        Vector3D normal = wall.perpCcwXy();
+        Vector3D respectiveShipPosition = shipPosition - first;
+
+        float dotResult = normal.dot( respectiveShipPosition );
+        anyCollisions |= (dotResult < 0);
+
+    }
+
+    qDebug() << anyCollisions << endl;
 }
 
 void MyGLWindow::rotateShip(){
@@ -172,7 +255,6 @@ void MyGLWindow::rotateShip(){
 
 void MyGLWindow::keyPressEvent(QKeyEvent *event)
 {
-
   if(event->isAutoRepeat())
   {
     event->ignore();
@@ -183,7 +265,6 @@ void MyGLWindow::keyPressEvent(QKeyEvent *event)
     Input::registerKeyPress( event->key() );
 
   }
-
 }
 
 void MyGLWindow::keyReleaseEvent(QKeyEvent *event)

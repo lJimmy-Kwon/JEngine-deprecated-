@@ -6,8 +6,10 @@
 #include "profile_test.h"
 #include "common_test.h"
 
-int main(int argc, char** argv ){
+#include "Timing/Clock.h"
+using Timing::Clock;
 
+int main(int argc, char** argv ){
 
     int status = 0;
     {
@@ -35,8 +37,8 @@ int main(int argc, char** argv ){
 //         status |= QTest::qExec(&m3t, argc, argv );
     }
     {
-        profile_test pr;
-        status |= QTest::qExec(&pr, argc, argv );
+//        profile_test pr;
+//        status |= QTest::qExec(&pr, argc, argv );
     }
 
     return status;

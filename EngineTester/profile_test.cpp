@@ -1,8 +1,9 @@
 #include "profile_test.h"
-
 #include <fstream>
 using std::ifstream;
 using std::string;
+
+using Profiling::Profiler;
 
 namespace
 {
@@ -64,6 +65,7 @@ void checkFrames(unsigned int numFrames, bool excludeLastFrame = false ){
             QCOMPARE(getNextToken(input), categories[i]);
 
     unsigned int profileNumber = 0;
+
     if(numFrames >= Profiler::MAX_FRAME_NUMBER){
 
         profileNumber = (numFrames - Profiler::MAX_FRAME_NUMBER) * NUM_CATEGORIES;
@@ -82,7 +84,8 @@ void checkFrames(unsigned int numFrames, bool excludeLastFrame = false ){
 
     }
 
-    QCOMPARE(isAtEndOfFile(input), true );
+    QCOMPARE( isAtEndOfFile(input), true );
+
 }
 
 void profile_test::profiling()
@@ -142,5 +145,3 @@ void profile_test::GoAroundSeveralTimes()
 {
     runTestsOnFrames(Profiler::MAX_FRAME_NUMBER * 3.1415 );
 }
-
-

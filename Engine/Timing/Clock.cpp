@@ -15,13 +15,27 @@ namespace Timing {
         return true;
     }
 
-    void Clock::newFrame()
+    void Clock::start()
     {
-        deltaLastFrame = timer.elapsed() - timeLastFrame;
-        timeLastFrame  = timer.elapsed();
+        timer.restart();
+        timeLastFrame = timer.elapsed();
     }
 
-    float Clock::timeElapsedLastFrame() const
+    void Clock::stop()
+    {
+
+        deltaLastFrame = timer.elapsed() - timeLastFrame;
+        timeLastFrame  = timer.elapsed();
+
+    }
+
+    void Clock::lap()
+    {
+        stop();
+        start();
+    }
+
+    float Clock::lastlapTime() const
     {
         return deltaLastFrame;
     }

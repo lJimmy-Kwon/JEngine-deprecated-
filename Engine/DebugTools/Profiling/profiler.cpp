@@ -1,127 +1,138 @@
 #include "profiler.h"
 #ifdef PROFILEING_ON
-
-Profiler Profiler::theInstance;
-Profiler& Profiler::getInstance(){
-    return theInstance;
-};
-
 #include <cassert>
 #include <string>
 
-static std::ofstream outStream;
-void Profiler::initialize( const char* fileName )
-{
 
-    this -> fileName = fileName;
-    frameIndex    = -1;
-    categoryIndex =  0;
-    numUsedCategories = 0;
+namespace Profiling {
 
-}
+    Profiler Profiler::theInstance;
+    Profiler& Profiler::getInstance(){
+        return theInstance;
+    };
 
-void Profiler::addEntry( const char *category, float time )
-{
-    assert( categoryIndex < MAX_PROFILE_CATEGORIES);
 
-    ProfileCategory& pc = categories[categoryIndex];
+    static std::ofstream outStream;
+    void Profiler::initialize( const char* fileName )
+    {
 
-    if( frameIndex == 0 ){
-        pc.name = category;
-        numUsedCategories++;
-    }
-    else{
+        this -> fileName = fileName;
 
-        assert( pc.name == category && category != NULL );
-        assert( categoryIndex < numUsedCategories);
+        frameIndex    = -1;
+        categoryIndex =  0;
+        numUsedCategories = 0;
 
     }
 
-    pc.samples[ frameIndex % MAX_FRAME_NUMBER ] = time;
-    categoryIndex++;
+    void Profiler::addEntry( const char *category, float time )
+    {
 
-}
+        assert( categoryIndex < MAX_PROFILE_CATEGORIES);
 
-void Profiler::newFrame()
-{
-    if(frameIndex > 0 )
-        assert( categoryIndex == numUsedCategories );
+        ProfileCategory& pc = categories[categoryIndex];
 
-    frameIndex++;
-    categoryIndex = 0;
-
-}
-
-void Profiler::shutdown()
-{
-    writeData();
-}
-
-bool Profiler::wrapped() const
-{
-    return frameIndex >= MAX_FRAME_NUMBER && frameIndex != -1;
-}
-
-void Profiler::writeFrame(unsigned int frameNumber) const
-{
-    for(unsigned int cat = 0; cat < numUsedCategories; cat++){
-        outStream << categories[cat].samples[frameNumber];
-        outStream << getDelimiter(cat);
-    }
-}
-
-void Profiler::writeData() const
-{
-    outStream.open(fileName, std::ios::trunc );
-
-    for(unsigned int i = 0; i < numUsedCategories; i++ ){
-
-        outStream << categories[i].name;
-        outStream << getDelimiter(i);
-
-    }
-
-    unsigned int endIndex;
-    unsigned int startIndex;
-
-    if(wrapped()){
-
-        endIndex = frameIndex % MAX_FRAME_NUMBER;
-        startIndex = (endIndex + 1) % MAX_FRAME_NUMBER;
-        while (startIndex != endIndex) {
-            writeFrame(startIndex);
-            startIndex = (startIndex + 1 ) % MAX_FRAME_NUMBER;
+        if( frameIndex == 0 ){
+            pc.name = category;
+            numUsedCategories++;
         }
-        if(currentFrameComplete())
-            writeFrame(startIndex);
+        else{
 
-    }else{
+            assert( pc.name == category && category != NULL );
+            assert( categoryIndex < numUsedCategories);
 
-        unsigned int numActualFrames = frameIndex;
-        if(currentFrameComplete())
-            numActualFrames++;
-
-        startIndex = 0;
-        endIndex = numActualFrames;
-
-        while ( startIndex < endIndex){
-
-            writeFrame(startIndex++);
         }
 
+        pc.samples[ frameIndex % MAX_FRAME_NUMBER ] = time;
+        categoryIndex++;
+
     }
 
-    outStream.close();
-}
+    void Profiler::newFrame()
+    {
+        if(frameIndex > 0 )
+            assert( categoryIndex == numUsedCategories );
 
-char Profiler::getDelimiter( unsigned int index) const
-{
-   char delimiter = (( index + 1 ) < numUsedCategories) ? ',' : '\n';
-   return delimiter;
-}
+        frameIndex++;
+        categoryIndex = 0;
 
-bool Profiler::currentFrameComplete() const {
-    return categoryIndex == numUsedCategories;
-}
+    }
 
+    void Profiler::shutdown()
+    {
+        writeData();
+    }
+
+    bool Profiler::wrapped() const
+    {
+        return frameIndex >= MAX_FRAME_NUMBER && frameIndex != -1;
+    }
+
+    void Profiler::writeFrame(uint frameNumber) const
+    {
+        for(uint cat = 0; cat < numUsedCategories; cat++){
+            outStream << categories[cat].samples[frameNumber];
+            outStream << getDelimiter(cat);
+        }
+    }
+
+    void Profiler::writeData() const
+    {
+
+        QString savePath = QCoreApplication::applicationDirPath() + "/" + fileName;
+
+        qDebug() << "profile.csv saved on : " << savePath;
+        outStream.open(savePath.toStdString(), std::ios::trunc );
+
+        for(uint i = 0; i < numUsedCategories; i++ ){
+
+            outStream << categories[i].name;
+            outStream << getDelimiter(i);
+
+        }
+
+        uint endIndex;
+        uint startIndex;
+
+        if(wrapped()){
+
+            endIndex = frameIndex % MAX_FRAME_NUMBER;
+            startIndex = (endIndex + 1) % MAX_FRAME_NUMBER;
+            while (startIndex != endIndex) {
+                writeFrame(startIndex);
+                startIndex = (startIndex + 1 ) % MAX_FRAME_NUMBER;
+            }
+            if(currentFrameComplete())
+                writeFrame(startIndex);
+
+        }else{
+
+            uint numActualFrames = frameIndex;
+            if(currentFrameComplete())
+                numActualFrames++;
+
+            startIndex = 0;
+            endIndex = numActualFrames;
+
+            while ( startIndex < endIndex){
+
+                writeFrame(startIndex++);
+            }
+
+        }
+
+        outStream.close();
+    }
+
+    char Profiler::getDelimiter( uint index) const
+    {
+       char delimiter = (( index + 1 ) < numUsedCategories) ? ',' : '\n';
+       return delimiter;
+    }
+
+    bool Profiler::currentFrameComplete() const {
+        return categoryIndex == numUsedCategories;
+    }
+
+
+}
 #endif

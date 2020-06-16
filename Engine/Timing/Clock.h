@@ -9,8 +9,10 @@ namespace Timing{
 
         bool initialize();
         bool shutdown();
-        void newFrame();
-        float timeElapsedLastFrame() const;
+        void start();
+        void stop();
+        void lap();
+        float lastlapTime() const;
 
     private:
         QElapsedTimer timer;
