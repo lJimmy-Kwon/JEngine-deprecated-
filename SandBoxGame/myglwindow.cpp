@@ -21,6 +21,10 @@ namespace{
         Vector3D(-0.1f, -0.1f, 1.0f),
         Vector3D(+0.1f, -0.1f, 1.0f),
 
+        Vector3D(+0.0f, +sqrt(0.02f), 1.0f),
+        Vector3D(-0.1f, -0.1f, 1.0f),
+        Vector3D(+0.1f, -0.1f, 1.0f),
+
         Vector3D( -0.0f, +1.0f, 1.0f ),
         Vector3D( -1.0f, +0.0f, 1.0f ),
         Vector3D( -0.0f, -1.0f, 1.0f ),
@@ -28,7 +32,7 @@ namespace{
 
     };
 
-    GLushort indices[] = {0, 1, 1, 2, 2, 0, 3, 4, 4, 5, 5, 6, 6, 3};
+    GLushort indices[] = {0, 1, 1, 2, 2, 0, 0 + 3, 1 + 3, 1 + 3, 2 + 3, 2 + 3, 0 + 3, 3 + 3, 4 + 3, 4 + 3, 5 + 3, 5 + 3, 6 + 3, 6 + 3, 3 + 3};
 
     Vector3D bounderyVerts[] ={
 
@@ -39,7 +43,21 @@ namespace{
 
     };
 
+    Vector3D lerpPoints[] = {
+        Vector3D(+0.5f, +0.5f, +0.0f ),
+        Vector3D(-0.5f, +0.5f, +0.0f ),
+        Vector3D(-0.5f, -0.5f, +0.0f ),
+        Vector3D(+0.5f, -0.5f, +0.0f ),
+    };
+
+    const uint NUM_LERP_POINTS = sizeof(lerpPoints) / sizeof(*lerpPoints);
+    uint sourceLerpPoint;
+    uint destinationLerpPoint;
+    float lerpAlpha;
+    Vector3D currentLerperPosition;
+
     Vector3D shipPosition;
+    Vector3D oldShipPosition;
     Vector3D shipVelocity;
 
     float shipOrientation = 0.0f;
@@ -51,8 +69,6 @@ namespace{
     GLuint indicesBufferId;
 
     QTimer myTimer;
-
-
     Clock frameClock;
 
 }
@@ -73,6 +89,14 @@ void MyGLWindow::initializeGL()
 
     initializeOpenGLFunctions();
     glEnableVertexAttribArray( 0 );
+
+    if(NUM_LERP_POINTS > 1){
+
+        lerpAlpha = 0.0f;
+        destinationLerpPoint = 1;
+        targetNextLerpPoint();
+
+    }
 
     glViewport(0, 0, 800, 600 );
 
@@ -98,17 +122,40 @@ void MyGLWindow::updateForOSX(){
 
     frame++;
 
-    if(frame % 2 == 0){
+    if( frame % 2 == 0 ){
 
-        if( this->size() == QSize(800, 600))
+        if( this->size() == QSize( 800, 600 ))
         {
-            this->resize(QSize( 799, 599));
+            this->resize( QSize( 799, 599 ) );
         }
         else
         {
-            this->resize(800, 600);
+            this->resize( 800, 600 );
         }
     }
+}
+
+void MyGLWindow::targetNextLerpPoint(){
+
+    sourceLerpPoint = destinationLerpPoint;
+    destinationLerpPoint = (destinationLerpPoint + 1) % NUM_LERP_POINTS;
+
+}
+
+void MyGLWindow::lerpTheLerper(){
+
+    lerpAlpha += 0.0002f * frameClock.lastlapTime();
+    
+    if(  lerpAlpha >= 1.0f ){
+         lerpAlpha = 0.0f;
+         targetNextLerpPoint();
+    }
+    
+    const Vector3D& source = lerpPoints[sourceLerpPoint];
+    const Vector3D& destination = lerpPoints[destinationLerpPoint];
+
+    currentLerperPosition = Math::lerp(lerpAlpha, source, destination );
+
 }
 
 void MyGLWindow::myUpdate()
@@ -117,10 +164,12 @@ void MyGLWindow::myUpdate()
     frameClock.lap();
     rotateShip();
     updateVelocity();
-
-    checkBounderies();
+    oldShipPosition = shipPosition;
 
     shipPosition += shipVelocity * frameClock.lastlapTime();
+    checkBounderies();
+
+    lerpTheLerper();
 
     is_updated = true;
 }
@@ -150,7 +199,7 @@ void MyGLWindow::paintGL()
         Matrix3D op;
         {
             PROFILE("Matrix Multiplication");
-            op =  translator *  scale * rotator;
+            op = translator *  scale * rotator;
         }
 
         {
@@ -158,14 +207,21 @@ void MyGLWindow::paintGL()
             for( unsigned int i = 0 ; i < 3 ; i++ ){
                 transFormedshipVerts[i] = op * shipVerts[i];
             }
-            for( unsigned int i = 3 ; i < NUM_shipVerts ; i++ ){
+
+            Matrix3D translator2 = Matrix3D::translate( currentLerperPosition );
+            op = translator2 * scale;
+            for( unsigned int i = 3 ; i < 6 ; i++ ){
+                transFormedshipVerts[i] = op * shipVerts[i];
+            }
+
+            for( unsigned int i = 6 ; i < NUM_shipVerts ; i++ ){
                 transFormedshipVerts[i] = shipVerts[i];
             }
         }
 
         glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(transFormedshipVerts), transFormedshipVerts);
-        glDrawElements(GL_LINES, 15, GL_UNSIGNED_SHORT, 0 );
-        glDrawElements(GL_LINES, 15, GL_UNSIGNED_SHORT, 0 );
+        glDrawElements(GL_LINES, 21, GL_UNSIGNED_SHORT, 0 );
+        glDrawElements(GL_LINES, 21, GL_UNSIGNED_SHORT, 0 );
         is_updated = false;
     }
 }
@@ -210,8 +266,6 @@ void MyGLWindow::updateVelocity(){
 
 void MyGLWindow::checkBounderies(){
 
-    bool anyCollisions = false;
-
     for( uint i = 0 ; i < NUM_BOUNDARY_VERTS ; i++){
 
         const Vector3D& first  = bounderyVerts[i];
@@ -222,11 +276,13 @@ void MyGLWindow::checkBounderies(){
         Vector3D respectiveShipPosition = shipPosition - first;
 
         float dotResult = normal.dot( respectiveShipPosition );
-        anyCollisions |= (dotResult < 0);
 
+        if( dotResult < 0 ){
+
+            shipVelocity = shipVelocity - 2 * shipVelocity.projectOnto(normal);
+            shipPosition = oldShipPosition;
+        }
     }
-
-    qDebug() << anyCollisions << endl;
 }
 
 void MyGLWindow::rotateShip(){
@@ -234,7 +290,7 @@ void MyGLWindow::rotateShip(){
     Input::update();
     const float ANGULAR_MOVEMENT = 0.02f;
 
-    if( Input::keyPressed(Qt::Key_Right)){
+    if( Input::keyPressed(Qt::Key_Right) ){
 
         shipOrientation -= ANGULAR_MOVEMENT;
 

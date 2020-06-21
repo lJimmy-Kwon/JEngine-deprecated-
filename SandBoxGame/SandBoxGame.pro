@@ -19,9 +19,11 @@ DEFINES += PROFILEING_ON
 
 SOURCES += \
     main.cpp \
+    mygame.cpp \
     myglwindow.cpp
 
 HEADERS += \
+    mygame.h \
     myglwindow.h
 
 # Default rules for deployment.

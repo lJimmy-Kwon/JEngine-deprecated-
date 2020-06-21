@@ -6,7 +6,6 @@ Vector3D operator-( const Vector3D& left, const Vector3D& right){
     return Vector3D(left.x - right.x, left.y - right.y, left.z - right.z );
 }
 
-
 Vector3D operator*( float scale, const Vector3D& vector){
     return Vector3D( scale * vector.x, scale * vector.y, scale * vector.z );
 }

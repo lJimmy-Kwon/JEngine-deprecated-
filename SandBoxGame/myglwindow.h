@@ -41,6 +41,8 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void checkBounderies();
+    void lerpTheLerper();
+    void targetNextLerpPoint();
 
     bool is_updated = false;
 

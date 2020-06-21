@@ -1,4 +1,4 @@
-QT += testlib gui
+QT += testlib gui opengl
 
 TEMPLATE = lib
 CONFIG += staticlib
@@ -20,6 +20,7 @@ DEFINES += PROFILEING_ON
 
 SOURCES += \
     DebugTools/Profiling/profiler.cpp \
+    Rendering/renderer.cpp \
     Timing/Clock.cpp \
     engine.cpp \
     input/input.cpp
@@ -28,6 +29,9 @@ HEADERS += \
     DebugTools/Profiling/profile.h \
     DebugTools/Profiling/profiler.h \
     Misc/typeDefs.h \
+    Rendering/Geometry.h \
+    Rendering/Renderable.h \
+    Rendering/renderer.h \
     Timing/Clock.h \
     input/input.h \
     math/Common.h \

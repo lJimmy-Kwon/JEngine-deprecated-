@@ -1,9 +1,10 @@
 #ifndef TYPEDEFS_H
 #define TYPEDEFS_H
 
-namespace kh {
-    typedef unsigned int uint;
-}
+
+typedef unsigned int uint;
+typedef unsigned short ushort;
+
 
 
 
